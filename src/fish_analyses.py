@@ -506,14 +506,28 @@ class Intensity():
         self.method = method
         self.number_channels = original_image.shape[-1]
         self.PIXELS_AROUND_SPOT = 3 # THIS HAS TO BE AN EVEN NUMBER
-        if isinstance(spot_size,(int,np.int64,np.int,np.int32)) :
-            self.spot_size = np.full(number_spots , spot_size)
-        elif isinstance(spot_size , (list, np.ndarray) ):
-            self.spot_size = spot_size.astype('int')
+        try:
+            np.int(1)
+            flag_np_old = True
+        except:
+            flag_np_old = False
+
+        if flag_np_old:
+            if isinstance(spot_size,(int,np.int64,np.int,np.int32)) :
+                self.spot_size = np.full(number_spots , spot_size)
+            elif isinstance(spot_size , (list, np.ndarray) ):
+                self.spot_size = spot_size.astype('int')
+            else:
+                print(type(spot_size))
+                raise ValueError("please use integer values for the spot_size or a numpy array with integer values ")
         else:
-            print(type(spot_size))
-            raise ValueError("please use integer values for the spot_size or a numpy array with integer values ")
-        
+            if isinstance(spot_size,(int,np.int64,np.int32)) :
+                self.spot_size = np.full(number_spots , spot_size)
+            elif isinstance(spot_size , (list, np.ndarray) ):
+                self.spot_size = spot_size.astype('int')
+            else:
+                print(type(spot_size))
+                raise ValueError("please use integer values for the spot_size or a numpy array with integer values ")
     
     def calculate_intensity(self):
         def return_crop(image:np.ndarray, x:int, y:int,spot_range):
